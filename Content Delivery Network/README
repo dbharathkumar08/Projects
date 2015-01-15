@@ -1,0 +1,88 @@
+AIM:
+
+The project aims to build our own Content Distribution Network in Python.
+The main components of this project is to set up a DNS server, HTTP server
+and a mapping component that maps clients to the best replica server. The 
+aim is to provide the content requested by the client as soon as possible.
+
+All the scripts should be made executable by using the command
+chmod +x filename
+where filename means all the files submitted except for README and Makefile
+
+In order to improve the performance of the CDN in terms of scalability and
+response time, the following design decisions were made:
+
+HTTP SERVER:
+
+1. Cache is maintained in every replica server so that the content can be 
+    made available closer to the client and response time reduces.
+2. Cache is maintained on the basis of number of times a particular page 
+    is requested
+3. Least requested content is removed from the cache if the cache 
+    memory exceeds 10MB
+4. The content for the first request is provided by the origin server as cache
+    is empty initially.
+5. After the first request replica server will check the cache if the content 
+   can be provided from cache.
+6. If the content is not available in cache then the origin server servers
+   the content to the client.
+7. In order to handle multiple HTTP requests the concept of multi-threading
+ is used
+
+DNS SERVER:
+
+1. GeoIP database is used to find out the replica server that is nearest
+ to client
+2. GeoIP database is accessed locally to make the access even faster 
+3. In order to handle multiple DNS requests the concept
+of multi-threading is used
+
+EVALUATING EFFECTIVENESS:
+
+1. Tested the code on local machine to verify the functionality of 
+    DNS and HTTP server.
+
+2. Running the HTTP server on EC2 replicas helped to ensure the
+   correctness of the HTTP server program. 
+
+3. Tested multi-threading in DNS Server by making requests from two 
+    clients simultaneously. Using:
+    dig @[your DNS server IP] -p [your port]   
+
+4. Tested DNS Server by altering the list of replica servers  and the 
+    order in which they are listed
+
+5. Tested HTTP Server by simultaneous requests from the clients to
+    download different pages. Using:
+    wget http://[your server name]:[your port name]/[path to content]
+
+6. Verified the cache replacement policy, and caching of served data
+
+CHALLENGES:
+
+1. Unpacking a DNS request at one go was a challenge. We unpacked 
+every section of DNS packet structure and this made it easy. 
+
+2. Figuring out the IP address of the DNS server was another challenge. 
+
+3. Cache replacement strategy is quite challenging. 
+
+4. Calculating the distance between client and replica servers using
+ GeoIP was challenging.
+
+5. Deploying CDN using SSH was challenging due to privacy conditions
+    in the servers.
+
+
+FUTURE GOALS:
+
+1. Replica server can be chosen depending upon the RTT between replica
+    server and the client.
+    Determination of RTT between each replica server and the client is a
+   challenging task.
+
+2. Load on the servers can be considered to choose the best replica server 
+    to provide content to the client.
+
+
+
